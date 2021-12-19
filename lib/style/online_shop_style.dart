@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class OnlineShopStyle {
-  ThemeData theme = ThemeData(
+  static ThemeData theme = ThemeData(
     fontFamily: 'Lato',
     primarySwatch: Colors.teal,
   );

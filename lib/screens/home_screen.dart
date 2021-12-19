@@ -51,6 +51,7 @@ class HomeScreen extends StatelessWidget {
         itemCount: _products.length,
         itemBuilder: (ctx, index) {
           return ProductItem(
+            productId: _products[index].id,
             image: _products[index].imageUrl,
             title: _products[index].title,
           );

@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 
+import '../screens/product_detail_screen.dart';
+
 class ProductItem extends StatelessWidget {
+  final String productId;
   final String image;
   final String title;
   const ProductItem({
     Key? key,
+    required this.productId,
     required this.image,
     required this.title,
   }) : super(key: key);
@@ -14,9 +18,17 @@ class ProductItem extends StatelessWidget {
     return ClipRRect(
       borderRadius: BorderRadius.circular(10),
       child: GridTile(
-        child: Image.network(
-          image,
-          fit: BoxFit.cover,
+        child: GestureDetector(
+          onTap: () {
+            Navigator.of(context).pushNamed(
+              ProductDetailScreen.routName,
+              arguments: productId,
+            );
+          },
+          child: Image.network(
+            image,
+            fit: BoxFit.cover,
+          ),
         ),
         footer: GridTileBar(
           backgroundColor: Colors.black87,

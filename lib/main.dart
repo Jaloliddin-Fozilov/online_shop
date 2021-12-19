@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import './screens/home_screen.dart';
+import './screens/product_detail_screen.dart';
 
 import './style/online_shop_style.dart';
 
@@ -11,7 +12,7 @@ void main() {
 class MyApp extends StatelessWidget {
   MyApp({Key? key}) : super(key: key);
 
-  ThemeData theme = OnlineShopStyle().theme;
+  ThemeData theme = OnlineShopStyle.theme;
 
   @override
   Widget build(BuildContext context) {
@@ -19,6 +20,9 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: theme,
       home: HomeScreen(),
+      routes: {
+        ProductDetailScreen.routName: (ctx) => const ProductDetailScreen(),
+      },
     );
   }
 }
