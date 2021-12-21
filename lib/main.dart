@@ -25,7 +25,7 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         theme: theme,
-        home: HomeScreen(),
+        home: const HomeScreen(),
         routes: {
           ProductDetailScreen.routName: (ctx) => const ProductDetailScreen(),
         },
