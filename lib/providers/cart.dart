@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 
 import '../models/cart_item.dart';
@@ -10,6 +9,20 @@ class Cart with ChangeNotifier {
     return {..._items};
   }
 
+  int itemsCount() {
+    return _items.length;
+  }
+
+  double get totalPrice {
+    var total = 0.0;
+    _items.forEach(
+      (key, cartItem) {
+        total += cartItem.price * cartItem.quantity;
+      },
+    );
+    return total;
+  }
+
   void addToCart(
     String productId,
     String title,
@@ -17,7 +30,7 @@ class Cart with ChangeNotifier {
     double price,
   ) {
     if (_items.containsKey(productId)) {
-      // mahsulot bo'lsa ++ bo'lish kerak
+      // mahsulot bo'lsa + 1 bo'lish kerak
       _items.update(
         productId,
         (currentProduct) => CartItem(
@@ -39,5 +52,6 @@ class Cart with ChangeNotifier {
             image: image),
       );
     }
+    notifyListeners();
   }
 }
