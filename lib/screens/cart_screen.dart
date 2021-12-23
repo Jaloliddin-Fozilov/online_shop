@@ -18,59 +18,58 @@ class CartScreen extends StatelessWidget {
         centerTitle: true,
         title: const Text("Sizning savatchangiz"),
       ),
-      body: Padding(
-        padding: const EdgeInsets.only(top: 16, right: 16, left: 16),
-        child: Column(
-          children: [
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.all(
-                  10,
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text(
-                      "Umumiy",
-                      style: TextStyle(
-                        fontSize: 16,
+      body: Column(
+        children: [
+          Card(
+            margin: const EdgeInsets.all(10),
+            child: Padding(
+              padding: const EdgeInsets.all(
+                10,
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    "Umumiy",
+                    style: TextStyle(
+                      fontSize: 16,
+                    ),
+                  ),
+                  const Spacer(),
+                  Chip(
+                    label: Text(
+                      "\$${cart.totalPrice.toStringAsFixed(2)}",
+                      style: const TextStyle(
+                        color: Colors.white,
                       ),
                     ),
-                    const Spacer(),
-                    Chip(
-                      label: Text(
-                        "\$${cart.totalPrice.toStringAsFixed(2)}",
-                        style: const TextStyle(
-                          color: Colors.white,
-                        ),
-                      ),
-                      backgroundColor: Theme.of(context).primaryColor,
-                    ),
-                    TextButton(
-                      onPressed: () {},
-                      child: const Text("BUYURTMA QILISH"),
-                    ),
-                  ],
-                ),
+                    backgroundColor: Theme.of(context).primaryColor,
+                  ),
+                  TextButton(
+                    onPressed: () {},
+                    child: const Text("BUYURTMA QILISH"),
+                  ),
+                ],
               ),
             ),
-            const SizedBox(height: 10),
-            Expanded(
-              child: ListView.builder(
-                itemCount: cart.items.length,
-                itemBuilder: (ctx, i) {
-                  final cartItem = cart.items.values.toList()[i];
-                  return CartListItem(
-                    imageUrl: cartItem.image,
-                    title: cartItem.title,
-                    price: cartItem.price,
-                    quantity: cartItem.quantity,
-                  );
-                },
-              ),
+          ),
+          const SizedBox(height: 10),
+          Expanded(
+            child: ListView.builder(
+              itemCount: cart.items.length,
+              itemBuilder: (ctx, i) {
+                final cartItem = cart.items.values.toList()[i];
+                return CartListItem(
+                  productId: cart.items.keys.toList()[i],
+                  imageUrl: cartItem.image,
+                  title: cartItem.title,
+                  price: cartItem.price,
+                  quantity: cartItem.quantity,
+                );
+              },
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
