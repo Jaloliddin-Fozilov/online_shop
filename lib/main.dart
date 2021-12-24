@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import './providers/cart.dart';
 import './providers/products.dart';
+import './providers/orders.dart';
 
 import './screens/home_screen.dart';
 import './screens/product_detail_screen.dart';
@@ -28,6 +29,9 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProvider<Cart>(
           create: (ctx) => Cart(),
+        ),
+        ChangeNotifierProvider<Orders>(
+          create: (ctx) => Orders(),
         ),
       ],
       child: MaterialApp(
