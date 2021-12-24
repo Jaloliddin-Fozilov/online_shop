@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:online_shop/widgets/cart_list_item.dart';
-
 import 'package:provider/provider.dart';
 
+import '../providers/orders.dart';
 import '../providers/cart.dart';
+
+import '../widgets/cart_list_item.dart';
 
 class CartScreen extends StatelessWidget {
   const CartScreen({Key? key}) : super(key: key);
@@ -46,7 +47,13 @@ class CartScreen extends StatelessWidget {
                     backgroundColor: Theme.of(context).primaryColor,
                   ),
                   TextButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      Provider.of<Orders>(context, listen: false).addToOrders(
+                        cart.items.values.toList(),
+                        cart.totalPrice,
+                      );
+                      cart.clearItems();
+                    },
                     child: const Text("BUYURTMA QILISH"),
                   ),
                 ],

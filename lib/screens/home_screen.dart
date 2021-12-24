@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../widgets/products_grid.dart';
 import '../widgets/custom_cart.dart';
+import '../widgets/app_drawer.dart';
 
 import '../screens/cart_screen.dart';
 
@@ -16,6 +17,7 @@ enum FilterOptions {
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
 
+  static const routName = "/";
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
@@ -73,6 +75,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
       ),
+      drawer: AppDrawer(),
       body: ProductsGrid(_showOnlyFavorite),
     );
   }
