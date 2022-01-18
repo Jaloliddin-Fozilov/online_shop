@@ -58,6 +58,19 @@ class ProductItem extends StatelessWidget {
                 product.imageUrl,
                 product.price,
               );
+              ScaffoldMessenger.of(context).hideCurrentSnackBar();
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text("Savatchaga qo'shildi"),
+                  duration: Duration(seconds: 2),
+                  action: SnackBarAction(
+                    label: 'BEKOR QILISH',
+                    onPressed: () {
+                      cart.removeSingleItem(product.id, isCartButton: true);
+                    },
+                  ),
+                ),
+              );
             },
             icon: const Icon(
               Icons.shopping_cart_sharp,
