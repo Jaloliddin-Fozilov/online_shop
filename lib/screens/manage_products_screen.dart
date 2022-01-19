@@ -4,6 +4,8 @@ import 'package:provider/provider.dart';
 import '../widgets/user_product_item.dart';
 import '../widgets/app_drawer.dart';
 
+import '/screens/edit_product_screen.dart';
+
 import '../providers/products.dart';
 
 class ManageProductScreen extends StatelessWidget {
@@ -21,7 +23,8 @@ class ManageProductScreen extends StatelessWidget {
         title: const Text("Mahsulotlarni boshqarish"),
         actions: [
           IconButton(
-            onPressed: () {},
+            onPressed: () =>
+                Navigator.of(context).pushNamed(EditProductScreen.routName),
             icon: const Icon(Icons.add),
           ),
         ],
