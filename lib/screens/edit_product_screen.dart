@@ -36,6 +36,13 @@ class _EditProductScreenState extends State<EditProductScreen> {
                 border: OutlineInputBorder(),
               ),
               keyboardType: TextInputType.url,
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Iltimos, mahsulot havolasini kiriting.';
+                } else if (!value.startsWith('http')) {
+                  return 'Mahsulotni URLini kiritng.';
+                }
+              },
               onSaved: (newValue) {
                 _product = Product(
                   id: '',
@@ -53,7 +60,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
               child: const Text('BEKOR QILISH'),
             ),
             ElevatedButton(
-              onPressed: () => _saveImageForm,
+              onPressed: _saveImageForm,
               child: const Text('SAQLASH'),
             ),
           ],
@@ -63,16 +70,19 @@ class _EditProductScreenState extends State<EditProductScreen> {
   }
 
   void _saveImageForm() {
-    _imageForm.currentState!.save();
-    print(_product.imageUrl);
-    Navigator.of(context).pop();
+    final isValid = _imageForm.currentState!.validate();
+    if (isValid) {
+      _imageForm.currentState!.save();
+      Navigator.of(context).pop();
+      setState(() {});
+    }
   }
 
   void _saveForm() {
-    _form.currentState!.save();
-    print(_product.title);
-    print(_product.description);
-    print(_product.price);
+    final isValid = _form.currentState!.validate();
+    if (isValid) {
+      _form.currentState!.save();
+    }
   }
 
   @override
@@ -102,6 +112,11 @@ class _EditProductScreenState extends State<EditProductScreen> {
                     border: OutlineInputBorder(),
                   ),
                   textInputAction: TextInputAction.next,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Iltimos mahsulot nomini kiriting.';
+                    }
+                  },
                   onSaved: (newValue) {
                     _product = Product(
                       id: '',
@@ -119,6 +134,15 @@ class _EditProductScreenState extends State<EditProductScreen> {
                     border: OutlineInputBorder(),
                   ),
                   textInputAction: TextInputAction.next,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Iltimos mahsulot narxini kiriting.';
+                    } else if (double.tryParse(value) == null) {
+                      return 'To\'g\'ri narxi kiriting.';
+                    } else if (double.parse(value) < 1) {
+                      return 'Mahsulot narxi 0dan katta bo\'lishi kerak';
+                    }
+                  },
                   onSaved: (newValue) {
                     _product = Product(
                       id: '',
@@ -132,12 +156,19 @@ class _EditProductScreenState extends State<EditProductScreen> {
                 const SizedBox(height: 10),
                 TextFormField(
                   decoration: const InputDecoration(
-                    labelText: 'Nomi',
+                    labelText: 'Tarifi',
                     border: OutlineInputBorder(),
                     alignLabelWithHint: true,
                   ),
                   maxLines: 3,
                   keyboardType: TextInputType.multiline,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Iltimos mahsulot tarifini kiriting.';
+                    } else if (value.length < 10) {
+                      return 'Iltimos, batafsil ma\'lumot kiriting.';
+                    }
+                  },
                   onSaved: (newValue) {
                     _product = Product(
                       id: '',
@@ -167,7 +198,13 @@ class _EditProductScreenState extends State<EditProductScreen> {
                       height: 180,
                       width: double.infinity,
                       alignment: Alignment.center,
-                      child: const Text('Asosiy rasm URL-ni kiriting.'),
+                      child: _product.imageUrl.isEmpty
+                          ? const Text('Asosiy rasm URL-ni kiriting.')
+                          : Image.network(
+                              _product.imageUrl,
+                              width: double.infinity,
+                              fit: BoxFit.cover,
+                            ),
                     ),
                   ),
                 )
