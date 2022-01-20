@@ -1,10 +1,45 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import 'package:online_shop/models/product.dart';
+import '../models/product.dart';
+import '../screens/edit_product_screen.dart';
+import '../providers/products.dart';
 
 class UserProductItem extends StatelessWidget {
   const UserProductItem({Key? key}) : super(key: key);
+
+  void _notifyUserAboutDelete(BuildContext context, Function() removeItem) {
+    showDialog(
+      context: context,
+      builder: (ctx) {
+        return AlertDialog(
+          title: const Text("Ishonchingiz komilmi?"),
+          content: const Text("Mahsulot o'chmoqda!"),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text(
+                "BEKOR QILSH",
+                style: TextStyle(
+                  color: Colors.black54,
+                ),
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                removeItem();
+                Navigator.of(context).pop();
+              },
+              child: const Text("O'CHIRISH"),
+              style: ElevatedButton.styleFrom(
+                primary: Theme.of(context).errorColor,
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -19,12 +54,25 @@ class UserProductItem extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             IconButton(
-              onPressed: () {},
+              onPressed: () {
+                Navigator.of(context).pushNamed(
+                  EditProductScreen.routName,
+                  arguments: product.id,
+                );
+              },
               icon: const Icon(Icons.edit),
               color: Theme.of(context).primaryColor,
             ),
             IconButton(
-              onPressed: () {},
+              onPressed: () {
+                _notifyUserAboutDelete(
+                  context,
+                  () {
+                    Provider.of<Products>(context, listen: false)
+                        .deleteProduct(product.id);
+                  },
+                );
+              },
               icon: const Icon(Icons.delete),
               color: Theme.of(context).errorColor,
             ),
