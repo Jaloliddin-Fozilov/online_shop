@@ -139,16 +139,35 @@ class _EditProductScreenState extends State<EditProductScreen> {
               );
             },
           );
-        } finally {
-          setState(() {
-            _isLoading = true;
-          });
-          Navigator.of(context).pop();
         }
       } else {
-        Provider.of<Products>(context, listen: false).updateProduct(_product);
-        Navigator.of(context).pop();
+        try {
+          await Provider.of<Products>(context, listen: false)
+              .updateProduct(_product);
+        } catch (e) {
+          await showDialog<Null>(
+            context: context,
+            builder: (ctx) {
+              return AlertDialog(
+                title: const Text('Xatolik!'),
+                content: const Text(
+                    'Mahsulotni o\'zgartirishda xatolik sodir bo\'ldi'),
+                actions: [
+                  TextButton(
+                    onPressed: () => Navigator.of(ctx).pop(),
+                    child: const Text('Oynani yopish'),
+                  ),
+                ],
+              );
+            },
+          );
+        }
       }
+      setState(() {
+        _isLoading = false;
+      });
+
+      Navigator.of(context).pop();
     }
   }
 
