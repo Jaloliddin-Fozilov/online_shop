@@ -130,7 +130,7 @@ class Products with ChangeNotifier {
     }
   }
 
-  void deleteProduct(String id) async {
+  Future<void> deleteProduct(String id) async {
     final url = Uri.parse(
         'https://online-shop-flutter-lessons-default-rtdb.firebaseio.com/products/$id.json');
     try {
