@@ -31,8 +31,7 @@ class _OrderItemState extends State<OrderItem> {
         children: [
           ListTile(
             title: Text('\$${widget.totalPrice}'),
-            subtitle:
-                Text('${DateFormat('dd/MM/yyyy hh:mm').format(widget.date)}'),
+            subtitle: Text(DateFormat('dd/MM/yyyy hh:mm').format(widget.date)),
             trailing: IconButton(
               onPressed: () {
                 setState(() {
