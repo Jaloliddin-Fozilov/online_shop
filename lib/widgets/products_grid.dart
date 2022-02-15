@@ -17,53 +17,61 @@ class ProductsGrid extends StatefulWidget {
 }
 
 class _ProductsGridState extends State<ProductsGrid> {
-  var _init = true;
-  var _isLoading = false;
+  late Future _productFuture;
+  Future _getProductsFuture() {
+    return Provider.of<Products>(context, listen: false)
+        .getProductsFromFirebase();
+  }
 
   @override
-  void didChangeDependencies() {
-    if (_init) {
-      _isLoading = true;
-      Provider.of<Products>(context, listen: false)
-          .getProductsFromFirebase()
-          .then((_) {
-        setState(() {
-          _isLoading = false;
-        });
-      });
-    }
-    _init = false;
-    super.didChangeDependencies();
+  void initState() {
+    _productFuture = _getProductsFuture();
+    super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    final producrsData = Provider.of<Products>(context);
-    final products =
-        widget.showFavorites ? producrsData.favorites : producrsData.list;
-    return _isLoading
-        ? const Center(
+    return FutureBuilder(
+      future: _productFuture,
+      builder: (ctx, dataSnapshot) {
+        if (dataSnapshot.connectionState == ConnectionState.waiting) {
+          return const Center(
             child: CircularProgressIndicator(),
-          )
-        : products.isNotEmpty
-            ? GridView.builder(
-                padding: const EdgeInsets.all(20),
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 1,
-                  childAspectRatio: 3 / 2,
-                  mainAxisSpacing: 20,
-                  crossAxisSpacing: 20,
-                ),
-                itemCount: products.length,
-                itemBuilder: (ctx, index) {
-                  return ChangeNotifierProvider.value(
-                    value: products[index],
-                    child: const ProductItem(),
-                  );
-                },
-              )
-            : const Center(
-                child: Text('Maxsulotlar mavjud emas'),
-              );
+          );
+        } else {
+          if (dataSnapshot.error == null) {
+            return Consumer<Products>(builder: (c, products, child) {
+              final ps =
+                  widget.showFavorites ? products.favorites : products.list;
+              return ps.isNotEmpty
+                  ? GridView.builder(
+                      padding: const EdgeInsets.all(20),
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 1,
+                        childAspectRatio: 3 / 2,
+                        mainAxisSpacing: 20,
+                        crossAxisSpacing: 20,
+                      ),
+                      itemCount: ps.length,
+                      itemBuilder: (ctx, index) {
+                        return ChangeNotifierProvider.value(
+                          value: ps[index],
+                          child: const ProductItem(),
+                        );
+                      },
+                    )
+                  : const Center(
+                      child: Text('Maxsulotlar mavjud emas'),
+                    );
+            });
+          } else {
+            return const Center(
+              child: Text('Xatolik sodir bo\'ldi'),
+            );
+          }
+        }
+      },
+    );
   }
 }

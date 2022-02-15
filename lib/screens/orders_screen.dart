@@ -17,45 +17,60 @@ class OrdersScreen extends StatefulWidget {
 }
 
 class _OrdersScreenState extends State<OrdersScreen> {
-  var _init = true;
+  var _isLoading = false;
+  late Future _ordersFuture;
+
+  Future _getOrdersFuture() {
+    return Provider.of<Orders>(context, listen: false).getOrdersFromFirebase();
+  }
 
   @override
-  void didChangeDependencies() {
-    if (_init) {
-      Provider.of<Orders>(context, listen: false).getOrdersFromFirebase();
-    }
-    _init = false;
-    super.didChangeDependencies();
+  void initState() {
+    _ordersFuture = _getOrdersFuture();
+    super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    final orders = Provider.of<Orders>(context);
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
         title: const Text("Orders"),
       ),
       drawer: const AppDrawer(),
-      body: orders.items.isNotEmpty
-          ? ListView.builder(
-              itemCount: orders.items.length,
-              itemBuilder: (ctx, index) {
-                final order = orders.items[index];
-                final products =
-                    Provider.of<Products>(context).findById(order.id);
-                print(products);
-
-                return OrderItem(
-                  totalPrice: order.totalPrice,
-                  date: order.date,
-                  products: order.products,
-                );
-              },
-            )
-          : const Center(
-              child: Text("Hali mahsulotlarga buyurtma bermagansiz."),
-            ),
+      body: FutureBuilder(
+        builder: (ctx, dataSnapshot) {
+          if (dataSnapshot.connectionState == ConnectionState.waiting) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          } else {
+            if (dataSnapshot.error == null) {
+              return Consumer<Orders>(
+                builder: (context, orders, child) => orders.items.isEmpty
+                    ? const Center(
+                        child: Text("Hali mahsulotlarga buyurtma bermagansiz."),
+                      )
+                    : ListView.builder(
+                        itemCount: orders.items.length,
+                        itemBuilder: (ctx, index) {
+                          final order = orders.items[index];
+                          return OrderItem(
+                            totalPrice: order.totalPrice,
+                            date: order.date,
+                            products: order.products,
+                          );
+                        },
+                      ),
+              );
+            } else {
+              return const Center(
+                child: Text('Xatolik yuz berdi'),
+              );
+            }
+          }
+        },
+      ),
     );
   }
 }

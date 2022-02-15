@@ -151,9 +151,6 @@ class Products with ChangeNotifier {
   }
 
   Product findById(String productId) {
-    print(_list.firstWhere(
-      (product) => product.id == productId,
-    ));
     return _list.firstWhere(
       (product) => product.id == productId,
     );

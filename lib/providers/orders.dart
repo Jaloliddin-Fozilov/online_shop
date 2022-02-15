@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:intl/intl.dart';
 
 import '../models/cart_item.dart';
 import '/models/order.dart';
@@ -24,7 +23,7 @@ class Orders with ChangeNotifier {
       }
       final data = jsonDecode(response.body) as Map<String, dynamic>;
 
-      final List<Order> loadedOrders = [];
+      List<Order> loadedOrders = [];
 
       data.forEach(
         (orderId, orderData) {
@@ -32,7 +31,7 @@ class Orders with ChangeNotifier {
             0,
             Order(
               id: orderId,
-              totalPrice: orderData['price'],
+              totalPrice: orderData['totalPrice'],
               date: DateTime.parse(orderData['date']),
               products: (orderData['products'] as List<dynamic>)
                   .map(
@@ -80,6 +79,7 @@ class Orders with ChangeNotifier {
           },
         ),
       );
+
       _items.insert(
         0,
         Order(
