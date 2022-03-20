@@ -17,7 +17,7 @@ enum FilterOptions {
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
 
-  static const routName = "/";
+  static const routName = "/home";
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
