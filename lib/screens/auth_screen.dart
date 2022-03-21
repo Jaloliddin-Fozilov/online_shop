@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:online_shop/services/http_expection.dart';
 import 'package:provider/provider.dart';
 
 import '../providers/auth.dart';
@@ -17,26 +18,78 @@ class AuthScreen extends StatefulWidget {
 class _AuthScreenState extends State<AuthScreen> {
   GlobalKey<FormState> _formKey = GlobalKey();
   AuthMode _authMode = AuthMode.Login;
-
   final _passwordController = TextEditingController();
+
+  var _loading = false;
+
   Map<String, String> _authData = {
     'email': '',
     'password': '',
   };
-  void _submit() {
+  void _showErrorDialog(String message) {
+    showDialog(
+      context: context,
+      builder: (ctx) {
+        return AlertDialog(
+          title: const Text('Xatolik!'),
+          content: Text(message),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(ctx).pop();
+                setState(() {
+                  _loading = false;
+                });
+              },
+              child: const Text('Okay'),
+            )
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> _submit() async {
     if (_formKey.currentState!.validate()) {
       // save form
       _formKey.currentState!.save();
-      if (_authMode == AuthMode.Login) {
-        // login user
-      } else {
-        //  register user
-        print(_authData['emal']!);
-        print(_authData['password']!);
-        Provider.of<Auth>(context, listen: false).signup(
-          _authData['emal']!,
-          _authData['password']!,
-        );
+      setState(() {
+        _loading = true;
+      });
+      try {
+        if (_authMode == AuthMode.Login) {
+          // login user
+          await Provider.of<Auth>(context, listen: false).signin(
+            _authData['email']!,
+            _authData['password']!,
+          );
+          setState(() {
+            _loading = false;
+          });
+        } else {
+          //  register user
+          await Provider.of<Auth>(context, listen: false).signup(
+            _authData['email']!,
+            _authData['password']!,
+          );
+          setState(() {
+            _loading = false;
+          });
+        }
+      } on HttpExpection catch (error) {
+        var errorMessage = 'Kechirasiz xatolik sodir bo\'ldi.';
+        if (error.message.contains('EMAIL_EXISTS')) {
+          errorMessage = 'Bunday email mavjud.';
+        } else if (error.message.contains('EMAIL_NOT_FOUND')) {
+          errorMessage = 'Bunday email topilmadi';
+        } else if (error.message.contains('INVALID_PASSWORD')) {
+          errorMessage = 'Parol notog\'ri';
+        }
+        _showErrorDialog(errorMessage);
+      } catch (e) {
+        var errorMessage =
+            'Kechirasiz xatolik sodir bo\'ldi. Qaytadan urinib ko\'ring';
+        _showErrorDialog(errorMessage);
       }
     }
   }
@@ -61,7 +114,6 @@ class _AuthScreenState extends State<AuthScreen> {
         child: Form(
           key: _formKey,
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Image.asset(
                 '../assets/images/logo.png',
@@ -124,20 +176,22 @@ class _AuthScreenState extends State<AuthScreen> {
               const SizedBox(
                 height: 60,
               ),
-              ElevatedButton(
-                onPressed: _submit,
-                child: Text(
-                  _authMode == AuthMode.Login
-                      ? 'KIRISH'
-                      : 'RO\'YXATDAN O\'TISH',
-                ),
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 20),
-                  shape: const RoundedRectangleBorder(
-                    borderRadius: BorderRadius.zero,
-                  ),
-                ),
-              ),
+              _loading
+                  ? const CircularProgressIndicator()
+                  : ElevatedButton(
+                      onPressed: () => _submit(),
+                      child: Text(
+                        _authMode == AuthMode.Login
+                            ? 'KIRISH'
+                            : 'RO\'YXATDAN O\'TISH',
+                      ),
+                      style: ElevatedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 20),
+                          shape: const RoundedRectangleBorder(
+                            borderRadius: BorderRadius.zero,
+                          ),
+                          minimumSize: const Size(double.infinity, 50)),
+                    ),
               const SizedBox(
                 height: 40,
               ),
