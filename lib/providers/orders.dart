@@ -9,13 +9,21 @@ import '/models/order.dart';
 class Orders with ChangeNotifier {
   List<Order> _items = [];
 
+  String? _authToken;
+  String? _userId;
+
+  void setParams(String? authToken, String? userId) {
+    _authToken = authToken;
+    _userId = userId;
+  }
+
   List<Order> get items {
     return [..._items];
   }
 
   Future<void> getOrdersFromFirebase() async {
     final url = Uri.parse(
-        'https://online-shop-flutter-lessons-default-rtdb.firebaseio.com/orders.json');
+        'https://online-shop-flutter-lessons-default-rtdb.firebaseio.com/orders/$_userId.json?auth=$_authToken');
     try {
       final response = await http.get(url);
       if (jsonDecode(response.body) == null) {
@@ -31,7 +39,7 @@ class Orders with ChangeNotifier {
             0,
             Order(
               id: orderId,
-              totalPrice: orderData['totalPrice'],
+              totalPrice: double.parse(orderData['totalPrice']),
               date: DateTime.parse(orderData['date']),
               products: (orderData['products'] as List<dynamic>)
                   .map(
@@ -57,7 +65,7 @@ class Orders with ChangeNotifier {
 
   Future<void> addToOrders(List<CartItem> products, double totalPrice) async {
     final url = Uri.parse(
-        'https://online-shop-flutter-lessons-default-rtdb.firebaseio.com/orders.json');
+        'https://online-shop-flutter-lessons-default-rtdb.firebaseio.com/orders/$_userId.json?auth=$_authToken');
     try {
       final response = await http.post(
         url,

@@ -32,27 +32,52 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider<Auth>(
           create: ((ctx) => Auth()),
         ),
-        ChangeNotifierProvider<Products>(
+        ChangeNotifierProxyProvider<Auth, Products>(
           create: (ctx) => Products(),
+          update: (ctx, auth, previousProducts) =>
+              previousProducts!..setParams(auth.token, auth.userId),
         ),
         ChangeNotifierProvider<Cart>(
           create: (ctx) => Cart(),
         ),
-        ChangeNotifierProvider<Orders>(
+        ChangeNotifierProxyProvider<Auth, Orders>(
           create: (ctx) => Orders(),
+          update: (ctx, auth, previousOrders) =>
+              previousOrders!..setParams(auth.token, auth.userId),
         ),
       ],
-      child: MaterialApp(
-        debugShowCheckedModeBanner: false,
-        theme: theme,
-        home: const AuthScreen(),
-        routes: {
-          HomeScreen.routName: (ctx) => const HomeScreen(),
-          ProductDetailScreen.routName: (ctx) => const ProductDetailScreen(),
-          CartScreen.routName: (ctx) => const CartScreen(),
-          OrdersScreen.routName: (ctx) => const OrdersScreen(),
-          ManageProductScreen.routName: (ctx) => const ManageProductScreen(),
-          EditProductScreen.routName: (ctx) => const EditProductScreen(),
+      child: Consumer<Auth>(
+        builder: (ctx, authdata, child) {
+          return MaterialApp(
+            debugShowCheckedModeBanner: false,
+            theme: theme,
+            home: authdata.isAuth
+                ? const HomeScreen()
+                : FutureBuilder(
+                    future: authdata.autoLogin(),
+                    builder: (c, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const Scaffold(
+                          body: Center(
+                            child: CircularProgressIndicator(),
+                          ),
+                        );
+                      } else {
+                        return const AuthScreen();
+                      }
+                    },
+                  ),
+            routes: {
+              HomeScreen.routName: (ctx) => const HomeScreen(),
+              ProductDetailScreen.routName: (ctx) =>
+                  const ProductDetailScreen(),
+              CartScreen.routName: (ctx) => const CartScreen(),
+              OrdersScreen.routName: (ctx) => const OrdersScreen(),
+              ManageProductScreen.routName: (ctx) =>
+                  const ManageProductScreen(),
+              EditProductScreen.routName: (ctx) => const EditProductScreen(),
+            },
+          );
         },
       ),
     );

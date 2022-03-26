@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../models/product.dart';
 
 import '../providers/cart.dart';
+import '../providers/auth.dart';
 
 import '../screens/product_detail_screen.dart';
 
@@ -16,6 +17,7 @@ class ProductItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final product = Provider.of<Product>(context, listen: false);
     final cart = Provider.of<Cart>(context, listen: false);
+    final auth = Provider.of<Auth>(context, listen: false);
     return ClipRRect(
       borderRadius: BorderRadius.circular(10),
       child: GridTile(
@@ -37,7 +39,7 @@ class ProductItem extends StatelessWidget {
             builder: (ctx, pro, child) {
               return IconButton(
                 onPressed: () {
-                  pro.toggleLike();
+                  pro.toggleLike(auth.token!, auth.userId!);
                 },
                 icon: Icon(
                   pro.isFavorite ? Icons.favorite : Icons.favorite_outline,
@@ -61,8 +63,8 @@ class ProductItem extends StatelessWidget {
               ScaffoldMessenger.of(context).hideCurrentSnackBar();
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
-                  content: Text("Savatchaga qo'shildi"),
-                  duration: Duration(seconds: 2),
+                  content: const Text("Savatchaga qo'shildi"),
+                  duration: const Duration(seconds: 2),
                   action: SnackBarAction(
                     label: 'BEKOR QILISH',
                     onPressed: () {
